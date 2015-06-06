@@ -10,15 +10,24 @@ sudo apt-get install postgresql postgresql-contrib -y
 sudo pip install setuptools --upgrade
 sudo apt-get purge cloud-init -y
 
-#prepare env
-sudo chown -R vagrant /opt
-sudo rm -fR /vagrant/stack
-sudo rm -fR /vagrant/devstack
+git clone --depth 5 https://git.openstack.org/openstack-dev/devstack
+chown -R vagrant devstack
+sudo mkdir -p /opt/stack/
+chown -R vagrant /opt/stack/
 
-#get devstack
-git clone https://git.openstack.org/openstack-dev/devstack
-cp local.conf.dev devstack/local.conf
 
-sudo chown -R vagrant devstack/
-sudo chown -R vagrant /opt/stack/
-cd devstack
+# Enable and configure swap
+sudo fallocate -l 4G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+sudo cat <<EOF >> /etc/fstab
+/swapfile   none    swap    sw    0   0
+EOF
+
+sudo sysctl vm.swappiness=10
+sudo cat <<EOF >> /etc/sysctl.conf
+vm.swappiness=10
+EOF
+
+cp conf/local.conf vm/devstack/
