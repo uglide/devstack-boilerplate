@@ -29,5 +29,3 @@ sudo sysctl vm.swappiness=10
 sudo cat <<EOF >> /etc/sysctl.conf
 vm.swappiness=10
 EOF
-
-cp conf/local.conf vm/devstack/
